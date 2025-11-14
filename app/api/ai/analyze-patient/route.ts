@@ -18,8 +18,19 @@ const AnalysisSchema = z.object({
   risk: z.object({
     level: z.enum(["Low", "Medium", "High"]).or(z.string()), // allow other text but prefer these
     justification: z.string().optional().nullable(),
-  }).optional().default({ level: "Medium", justification: "" }),
-  recommendations: z.array(z.string()).optional().default([]),
+    confidence: z.number().min(0).max(100).optional().default(75), // confidence score 0-100
+  }).optional().default({ level: "Medium", justification: "", confidence: 75 }),
+  recommendations: z.array(z.object({
+    text: z.string(),
+    confidence: z.number().min(0).max(100).optional().default(80),
+    data_sources: z.array(z.string()).optional().default([]), // e.g., ["vitals", "labs", "lifestyle"]
+  })).optional().default([]),
+  lifestyle_insights: z.object({
+    activity_summary: z.string().optional(),
+    nutrition_summary: z.string().optional(),
+    sleep_summary: z.string().optional(),
+    correlations: z.array(z.string()).optional().default([]),
+  }).optional(),
 });
 
 type AnalysisType = z.infer<typeof AnalysisSchema>;
@@ -87,6 +98,11 @@ function buildJsonPrompt(patient: any) {
     vitals: Array.isArray(patient.vitals) ? patient.vitals.slice(0, 10) : [],
     labs: Array.isArray(patient.lab_results) ? patient.lab_results.slice(0, 10) : [],
     medications: patient.medications ?? [],
+    lifestyle: {
+      activity: patient.lifestyle?.activity ?? [],
+      nutrition: patient.lifestyle?.nutrition ?? [],
+      sleep: patient.lifestyle?.sleep ?? [],
+    },
   };
 
   return `You are a clinical assistant. Based on the provided patient data, return ONLY valid JSON matching the schema below.  
@@ -98,10 +114,29 @@ Schema:
   "findings": ["key finding 1", "key finding 2", "..."],
   "risk": {
     "level": "Low|Medium|High",
-    "justification": "one-line justification for the risk level"
+    "justification": "one-line justification for the risk level",
+    "confidence": 75 // 0-100 confidence score based on data quality and completeness
   },
-  "recommendations": ["actionable recommendation 1", "actionable recommendation 2", "..."]
+  "recommendations": [
+    {
+      "text": "actionable recommendation text",
+      "confidence": 85, // 0-100 confidence in this recommendation
+      "data_sources": ["vitals", "labs", "lifestyle"] // which data sources informed this recommendation
+    }
+  ],
+  "lifestyle_insights": {
+    "activity_summary": "summary of activity patterns if data available",
+    "nutrition_summary": "summary of nutrition patterns if data available",
+    "sleep_summary": "summary of sleep patterns if data available",
+    "correlations": ["correlation 1", "correlation 2"] // correlations between lifestyle and health metrics
+  }
 }
+
+IMPORTANT: 
+- Set confidence scores based on data quality and completeness. Lower confidence if data is sparse or outdated.
+- Include data_sources for each recommendation to indicate which data informed it.
+- If lifestyle data is available, analyze it and provide insights. If not available, omit lifestyle_insights.
+- Look for correlations between lifestyle factors (activity, nutrition, sleep) and clinical metrics (vitals, labs).
 
 Patient data (for context):
 ${JSON.stringify(safePatient, null, 2)}
