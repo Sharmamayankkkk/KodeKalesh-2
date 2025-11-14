@@ -123,10 +123,11 @@ export default function SignupPage() {
                 onChange={handleChange}
                 className="w-full px-4 py-2 border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
               >
-                <option value="doctor">Doctor</option>
+                <option value="doctor">Doctor / Clinician</option>
                 <option value="nurse">Nurse</option>
                 <option value="lab_technician">Lab Technician</option>
-                <option value="admin">Admin</option>
+                <option value="pharmacist">Pharmacist</option>
+                <option value="receptionist">Receptionist</option>
               </select>
             </div>
 
