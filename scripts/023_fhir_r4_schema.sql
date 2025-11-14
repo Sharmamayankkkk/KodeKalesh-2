@@ -22,11 +22,11 @@ CREATE TABLE IF NOT EXISTS fhir_patients (
   
   -- Identifiers (can have multiple - MRN, SSN, insurance, etc.)
   identifiers JSONB NOT NULL DEFAULT '[]'::JSONB,
-  -- Example: [{"system": "urn:oid:1.2.840.114350", "value": "MRN12345", "type": "MR"}]
+  -- Example: [{'system': 'urn:oid:1.2.840.114350', 'value': 'MRN12345', 'type': 'MR'}]
   
   -- Name (can have multiple - official, nickname, maiden, etc.)
   names JSONB NOT NULL DEFAULT '[]'::JSONB,
-  -- Example: [{"use": "official", "family": "Smith", "given": ["John", "A"]}]
+  -- Example: [{'use': 'official', 'family': 'Smith', 'given': ['John', 'A']}]
   
   -- Telecom (phone, email, etc.)
   telecoms JSONB DEFAULT '[]'::JSONB,
@@ -94,7 +94,7 @@ CREATE TABLE IF NOT EXISTS fhir_observations (
   
   -- Code (LOINC, SNOMED CT)
   code JSONB NOT NULL,
-  -- Example: {"coding": [{"system": "http://loinc.org", "code": "8867-4", "display": "Heart rate"}]}
+  -- Example: {'coding': [{'system': 'http://loinc.org', 'code': '8867-4', 'display': 'Heart rate'}]}
   
   -- Effective time
   effective_datetime TIMESTAMPTZ,
@@ -455,7 +455,7 @@ CREATE TABLE IF NOT EXISTS fhir_document_references (
 );
 
 CREATE INDEX idx_fhir_doc_patient ON fhir_document_references(patient_id);
-CREATE INDEX idx_fhir_doc_type ON fhir_document_references USING GIN(type);
+CREATE INDEX idx_fhir_doc_type ON fhir_document_references USING GIN(document_type);
 CREATE INDEX idx_fhir_doc_date ON fhir_document_references(date DESC);
 
 -- ============================================================================
@@ -592,49 +592,49 @@ COMMENT ON TABLE fhir_allergy_intolerances IS 'HL7 FHIR R4 AllergyIntolerance re
 COMMENT ON TABLE fhir_document_references IS 'HL7 FHIR R4 DocumentReference resources (clinical notes, reports)';
 COMMENT ON TABLE fhir_api_logs IS 'FHIR API access logs for compliance and monitoring';
 
-/*
-FHIR IMPLEMENTATION NOTES:
-
-1. Epic Integration:
-   - Join Epic App Orchard program
-   - Implement SMART on FHIR authentication (OAuth 2.0)
-   - Support Epic's FHIR endpoints
-   - Test with Epic's sandbox environment
-
-2. Cerner Integration:
-   - Register with Cerner Code Console
-   - Implement Cerner's FHIR API
-   - Support CareAware for real-time vitals
-
-3. FHIR API Endpoints to Implement:
-   - GET /Patient/{id}
-   - GET /Patient?identifier={mrn}
-   - GET /Observation?patient={id}&category=vital-signs
-   - GET /Observation?patient={id}&category=laboratory
-   - GET /Condition?patient={id}
-   - GET /MedicationRequest?patient={id}&status=active
-   - GET /AllergyIntolerance?patient={id}
-   - GET /DocumentReference?patient={id}
-   - POST /Patient (create)
-   - PUT /Patient/{id} (update)
-   - POST /$export (bulk data export)
-
-4. Security:
-   - SMART on FHIR authentication
-   - OAuth 2.0 with PKCE
-   - Scopes: patient/*.read, patient/*.write, user/*.read, user/*.write
-   - Rate limiting per client
-   - Audit all FHIR API access
-
-5. Testing:
-   - Use FHIR validator: https://validator.fhir.org/
-   - Test with Inferno testing tool
-   - Verify against US Core profiles
-   - Test bulk data export (FHIR Bulk Data Access)
-
-6. Performance:
-   - Cache FHIR resources (Redis, 5-minute TTL)
-   - Use pagination for large result sets (_count parameter)
-   - Implement _summary and _elements for partial resources
-   - Support _include and _revinclude for efficient queries
-*/
+--
+-- FHIR IMPLEMENTATION NOTES:
+--
+-- 1. Epic Integration:
+--    - Join Epic App Orchard program
+--    - Implement SMART on FHIR authentication (OAuth 2.0)
+--    - Support Epic's FHIR endpoints
+--    - Test with Epic's sandbox environment
+--
+-- 2. Cerner Integration:
+--    - Register with Cerner Code Console
+--    - Implement Cerner's FHIR API
+--    - Support CareAware for real-time vitals
+--
+-- 3. FHIR API Endpoints to Implement:
+--    - GET /Patient/{id}
+--    - GET /Patient?identifier={mrn}
+--    - GET /Observation?patient={id}&category=vital-signs
+--    - GET /Observation?patient={id}&category=laboratory
+--    - GET /Condition?patient={id}
+--    - GET /MedicationRequest?patient={id}&status=active
+--    - GET /AllergyIntolerance?patient={id}
+--    - GET /DocumentReference?patient={id}
+--    - POST /Patient (create)
+--    - PUT /Patient/{id} (update)
+--    - POST /$export (bulk data export)
+--
+-- 4. Security:
+--    - SMART on FHIR authentication
+--    - OAuth 2.0 with PKCE
+--    - Scopes: patient/*.read, patient/*.write, user/*.read, user/*.write
+--    - Rate limiting per client
+--    - Audit all FHIR API access
+--
+-- 5. Testing:
+--    - Use FHIR validator: https://validator.fhir.org/
+--    - Test with Inferno testing tool
+--    - Verify against US Core profiles
+--    - Test bulk data export (FHIR Bulk Data Access)
+--
+-- 6. Performance:
+--    - Cache FHIR resources (Redis, 5-minute TTL)
+--    - Use pagination for large result sets (_count parameter)
+--    - Implement _summary and _elements for partial resources
+--    - Support _include and _revinclude for efficient queries
+--

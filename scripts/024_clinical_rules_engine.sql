@@ -84,7 +84,7 @@ CREATE TABLE IF NOT EXISTS clinical_rules (
   -- Evidence basis
   guideline_id UUID REFERENCES clinical_guidelines(id),
   evidence_level TEXT CHECK (evidence_level IN ('expert_opinion', 'case_series', 'rct', 'meta_analysis')),
-  references JSONB, -- PubMed IDs, citations
+  citations JSONB, -- PubMed IDs, citations
   
   -- Performance tracking
   sensitivity NUMERIC(5,2), -- Target: 95%+
@@ -361,7 +361,7 @@ CREATE TABLE IF NOT EXISTS drug_interactions (
   effect TEXT NOT NULL, -- What happens
   
   clinical_management TEXT, -- How to manage
-  references JSONB,
+  citations JSONB,
   
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()

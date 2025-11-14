@@ -3,6 +3,10 @@
 -- Implements production-grade database optimization strategies
 -- ============================================================================
 
+ALTER TABLE public.vital_signs ADD COLUMN IF NOT EXISTS is_verified BOOLEAN DEFAULT FALSE;
+ALTER TABLE public.vital_signs ADD COLUMN IF NOT EXISTS verified_at TIMESTAMPTZ;
+ALTER TABLE public.vital_signs ADD COLUMN IF NOT EXISTS verified_by_id UUID REFERENCES public.users(id);
+
 -- ============================================================================
 -- 1. ADVANCED INDEXING STRATEGY
 -- ============================================================================
@@ -10,12 +14,12 @@
 -- Covering indexes for common queries (includes frequently accessed columns)
 CREATE INDEX IF NOT EXISTS idx_vitals_patient_date_covering 
   ON vital_signs(patient_id, measured_at DESC)
-  INCLUDE (temperature, heart_rate, blood_pressure_systolic, blood_pressure_diastolic, 
+  INCLUDE (temperature, heart_rate, systolic_bp, diastolic_bp, 
            respiratory_rate, oxygen_saturation);
 
 CREATE INDEX IF NOT EXISTS idx_lab_results_patient_date_covering
-  ON lab_results(patient_id, test_date DESC)
-  INCLUDE (test_name, result_value, result_unit, reference_range, status);
+  ON lab_results(patient_id, result_at DESC)
+  INCLUDE (test_name, result_value, unit, reference_range, status);
 
 CREATE INDEX IF NOT EXISTS idx_prescriptions_patient_active
   ON prescriptions(patient_id, start_date DESC)
@@ -23,35 +27,23 @@ CREATE INDEX IF NOT EXISTS idx_prescriptions_patient_active
   WHERE status = 'active';
 
 -- Partial indexes for frequently queried subsets
-CREATE INDEX IF NOT EXISTS idx_recent_vitals 
-  ON vital_signs(measured_at DESC, patient_id)
-  WHERE measured_at > NOW() - INTERVAL '30 days';
-
-CREATE INDEX IF NOT EXISTS idx_recent_labs
-  ON lab_results(test_date DESC, patient_id)
-  WHERE test_date > NOW() - INTERVAL '90 days';
-
 CREATE INDEX IF NOT EXISTS idx_active_alerts
   ON alerts(created_at DESC, patient_id, severity)
   WHERE status = 'active';
 
 CREATE INDEX IF NOT EXISTS idx_unverified_data
   ON vital_signs(patient_id, measured_at DESC)
-  WHERE verified = FALSE;
+  WHERE is_verified = FALSE;
 
 -- GIN indexes for JSON/array columns
 CREATE INDEX IF NOT EXISTS idx_audit_changes_gin
   ON audit_logs USING GIN(new_values);
 
-CREATE INDEX IF NOT EXISTS idx_suspicious_details_gin
-  ON suspicious_activities USING GIN(details);
 
 -- Hash indexes for equality lookups
 CREATE INDEX IF NOT EXISTS idx_users_email_hash
   ON users USING HASH(email);
 
-CREATE INDEX IF NOT EXISTS idx_sessions_token_hash
-  ON user_sessions USING HASH(session_token);
 
 -- ============================================================================
 -- 2. TABLE PARTITIONING FOR LARGE TABLES
@@ -82,7 +74,7 @@ CREATE INDEX IF NOT EXISTS idx_sessions_token_hash
 -- BEGIN
 --   -- CREATE TABLE lab_results_partitioned (
 --   --   LIKE lab_results INCLUDING ALL
---   -- ) PARTITION BY RANGE (test_date);
+--   -- ) PARTITION BY RANGE (result_at);
 -- END $$;
 
 -- ============================================================================
@@ -102,11 +94,11 @@ SELECT
   (SELECT measured_at FROM vital_signs WHERE patient_id = p.id ORDER BY measured_at DESC LIMIT 1) AS last_vitals_date,
   (SELECT temperature FROM vital_signs WHERE patient_id = p.id ORDER BY measured_at DESC LIMIT 1) AS last_temperature,
   (SELECT heart_rate FROM vital_signs WHERE patient_id = p.id ORDER BY measured_at DESC LIMIT 1) AS last_heart_rate,
-  (SELECT blood_pressure_systolic FROM vital_signs WHERE patient_id = p.id ORDER BY measured_at DESC LIMIT 1) AS last_bp_systolic,
+  (SELECT systolic_bp FROM vital_signs WHERE patient_id = p.id ORDER BY measured_at DESC LIMIT 1) AS last_bp_systolic,
   
   -- Lab results count
   (SELECT COUNT(*) FROM lab_results WHERE patient_id = p.id) AS total_lab_results,
-  (SELECT MAX(test_date) FROM lab_results WHERE patient_id = p.id) AS last_lab_date,
+  (SELECT MAX(result_at) FROM lab_results WHERE patient_id = p.id) AS last_lab_date,
   
   -- Active alerts count
   (SELECT COUNT(*) FROM alerts WHERE patient_id = p.id AND status = 'active') AS active_alerts_count,
@@ -120,7 +112,7 @@ SELECT
   -- Last updated
   NOW() AS summary_updated_at
 FROM patients p
-WHERE p.deleted_at IS NULL;
+WHERE p.status = 'active';
 
 CREATE UNIQUE INDEX ON mv_patient_summary(patient_id);
 CREATE INDEX ON mv_patient_summary(last_vitals_date DESC);
@@ -139,13 +131,13 @@ CREATE MATERIALIZED VIEW IF NOT EXISTS mv_alert_statistics AS
 SELECT
   DATE_TRUNC('day', created_at) AS alert_date,
   severity,
-  type,
+  alert_type,
   COUNT(*) AS alert_count,
   COUNT(DISTINCT patient_id) AS unique_patients,
   AVG(EXTRACT(EPOCH FROM (acknowledged_at - created_at))) AS avg_response_time_seconds
 FROM alerts
 WHERE created_at > NOW() - INTERVAL '90 days'
-GROUP BY DATE_TRUNC('day', created_at), severity, type;
+GROUP BY DATE_TRUNC('day', created_at), severity, alert_type;
 
 CREATE INDEX ON mv_alert_statistics(alert_date DESC, severity);
 
@@ -162,8 +154,8 @@ RETURNS TABLE (
   measured_at TIMESTAMPTZ,
   temperature NUMERIC,
   heart_rate INTEGER,
-  blood_pressure_systolic INTEGER,
-  blood_pressure_diastolic INTEGER,
+  systolic_bp INTEGER,
+  diastolic_bp INTEGER,
   respiratory_rate INTEGER,
   oxygen_saturation NUMERIC
 ) AS $$
@@ -173,8 +165,8 @@ BEGIN
     v.measured_at,
     v.temperature,
     v.heart_rate,
-    v.blood_pressure_systolic,
-    v.blood_pressure_diastolic,
+    v.systolic_bp,
+    v.diastolic_bp,
     v.respiratory_rate,
     v.oxygen_saturation
   FROM vital_signs v
@@ -238,7 +230,6 @@ COMMENT ON DATABASE postgres IS
 ALTER TABLE vital_signs SET (autovacuum_vacuum_scale_factor = 0.05);
 ALTER TABLE lab_results SET (autovacuum_vacuum_scale_factor = 0.05);
 ALTER TABLE audit_logs SET (autovacuum_vacuum_scale_factor = 0.02);
-ALTER TABLE authentication_events SET (autovacuum_vacuum_scale_factor = 0.02);
 
 -- ============================================================================
 -- 7. PERFORMANCE MONITORING VIEWS
@@ -261,7 +252,7 @@ LIMIT 20;
 CREATE OR REPLACE VIEW missing_indexes AS
 SELECT
   schemaname,
-  tablename,
+  relname AS tablename,
   seq_scan,
   idx_scan,
   ROUND(100.0 * seq_scan / NULLIF(seq_scan + idx_scan, 0), 2) AS seq_scan_pct
@@ -273,8 +264,8 @@ ORDER BY seq_scan DESC;
 CREATE OR REPLACE VIEW index_usage AS
 SELECT
   schemaname,
-  tablename,
-  indexname,
+  relname AS tablename,
+  indexrelname AS indexname,
   idx_scan,
   idx_tup_read,
   idx_tup_fetch,
@@ -286,10 +277,10 @@ ORDER BY idx_scan ASC, pg_relation_size(indexrelid) DESC;
 CREATE OR REPLACE VIEW table_bloat AS
 SELECT
   schemaname,
-  tablename,
-  pg_size_pretty(pg_total_relation_size(schemaname||'.'||tablename)) AS total_size,
-  pg_size_pretty(pg_relation_size(schemaname||'.'||tablename)) AS table_size,
-  pg_size_pretty(pg_total_relation_size(schemaname||'.'||tablename) - pg_relation_size(schemaname||'.'||tablename)) AS indexes_size,
+  relname AS tablename,
+  pg_size_pretty(pg_total_relation_size(schemaname||'.'||relname)) AS total_size,
+  pg_size_pretty(pg_relation_size(schemaname||'.'||relname)) AS table_size,
+  pg_size_pretty(pg_total_relation_size(schemaname||'.'||relname) - pg_relation_size(schemaname||'.'||relname)) AS indexes_size,
   n_tup_ins AS inserts,
   n_tup_upd AS updates,
   n_tup_del AS deletes,
@@ -362,8 +353,6 @@ $$ LANGUAGE plpgsql;
 COMMENT ON INDEX idx_vitals_patient_date_covering IS 
   'Covering index for patient vitals queries - includes most commonly accessed columns to avoid table lookups';
 
-COMMENT ON INDEX idx_recent_vitals IS 
-  'Partial index for recent vitals (last 30 days) - dramatically improves performance for recent data queries';
 
 COMMENT ON MATERIALIZED VIEW mv_patient_summary IS 
   'Pre-computed patient summary data - refresh every 5 minutes for optimal performance. Use REFRESH MATERIALIZED VIEW CONCURRENTLY to avoid blocking reads.';
