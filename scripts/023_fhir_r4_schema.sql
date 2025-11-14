@@ -335,7 +335,7 @@ CREATE TABLE IF NOT EXISTS fhir_allergy_intolerances (
   verification_status JSONB,
   
   -- Type: allergy, intolerance
-  type TEXT CHECK (type IN ('allergy', 'intolerance')),
+  allergy_type TEXT CHECK (allergy_type IN ('allergy', 'intolerance')),
   
   -- Category: food, medication, environment, biologic
   categories TEXT[] DEFAULT '{}',
@@ -411,7 +411,7 @@ CREATE TABLE IF NOT EXISTS fhir_document_references (
   doc_status TEXT CHECK (doc_status IN ('preliminary', 'final', 'amended', 'entered-in-error')),
   
   -- Type (LOINC document type)
-  type JSONB NOT NULL,
+  document_type JSONB NOT NULL,
   
   -- Category
   categories JSONB DEFAULT '[]'::JSONB,
