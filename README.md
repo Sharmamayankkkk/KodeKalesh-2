@@ -43,7 +43,7 @@ AI-powered clinical decision support and patient management system built with Ne
 ### 1. Clone the Repository
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/Sharmamayankkkk/KodeKalesh-2.git
 cd KodeKalesh-2
 ```
 

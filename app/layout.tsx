@@ -9,8 +9,7 @@ export const metadata: Metadata = {
     initialScale: 1,
     maximumScale: 1,
     userScalable: false,
-  },
-    generator: 'v0.app'
+  }
 };
 
 export default function RootLayout({

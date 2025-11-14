@@ -3,16 +3,18 @@
 ## 🏆 Hackathon Overview
 
 **Project Name**: HealthPulse Pro  
-**Category**: Healthcare Innovation / AI & Machine Learning  
-**Team**: [Your team name]  
-**Submission Date**: November 14, 2025  
-**Hackathon Duration**: 48-72 hours
+**Category**: Healthcare Innovation
+**Team**: Misfits
+**Submission Date**: November 15, 2025  
 
 ---
 
 ## 🎯 Problem Statement
 
 **The Challenge**: Clinicians face an overwhelming data-to-insight bottleneck that makes proactive patient management impossible.
+
+## 🎯 Problem Statemsnt (As per hackathon request):
+Clinicians lack the capacity for proactive patient management due to an unmanageable data-to-insight bottleneck. The high volume of critical, patient-generated data—spanning disparate metrics like blood pressure, glucose, diet, and activity—is delivered asynchronously, is often unverified, and lacks standardization. This creates a critical "signal-to-noise" problem, making it impossible to detect subtle deteriorations, correlate lifestyle factors with outcomes, or intervene effectively before a patient's condition becomes acute.
 
 ### Key Statistics
 - **30-day hospital readmission rate**: 15-20% ($26B annual cost to Medicare)
