@@ -2,6 +2,10 @@
 
 AI-powered clinical decision support and patient management system built with Next.js, Supabase, and Google's Gemini AI.
 
+## 🚀 Live Demo
+
+**[View Live Demo](https://kode-kalesh-2.vercel.app/)** - Experience HealthPulse Pro in action
+
 ## 📋 Documentation
 
 - **[🏆 Hackathon Submission Guide](./HACKATHON_SUBMISSION.md)** - Complete hackathon pitch and roadmap

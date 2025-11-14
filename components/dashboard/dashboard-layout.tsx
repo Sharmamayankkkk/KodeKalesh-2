@@ -3,10 +3,11 @@
 import { useState } from "react";
 import { useRouter } from 'next/navigation';
 import Link from "next/link";
-import { Menu, X, LogOut, LayoutDashboard, Users, AlertCircle, BarChart3, Settings, ChevronDown } from 'lucide-react';
+import { Menu, X, LogOut, ChevronDown } from 'lucide-react';
 import { createClient } from "@/lib/supabase/client";
 import MobileNav from "./mobile-nav";
 import SidebarNav from "./sidebar-nav";
+import Logo from "@/components/ui/logo";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -31,14 +32,8 @@ export default function DashboardLayout({ children, user }: DashboardLayoutProps
       {/* Sidebar */}
       <aside className="hidden md:flex w-64 border-r border-border bg-background flex-col">
         <div className="p-6 border-b border-border">
-          <Link href="/dashboard" className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-              <LayoutDashboard className="w-5 h-5 text-primary-foreground" />
-            </div>
-            <div>
-              <h1 className="font-bold text-foreground">HealthPulse</h1>
-              <p className="text-xs text-muted-foreground">Pro</p>
-            </div>
+          <Link href="/dashboard">
+            <Logo size="sm" />
           </Link>
         </div>
 
@@ -79,9 +74,7 @@ export default function DashboardLayout({ children, user }: DashboardLayoutProps
           )}
         </button>
 
-        <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-          <LayoutDashboard className="w-5 h-5 text-primary-foreground" />
-        </div>
+        <Logo size="sm" showText={false} />
 
         <div className="relative">
           <button
