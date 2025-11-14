@@ -2,6 +2,18 @@
 
 AI-powered clinical decision support and patient management system built with Next.js, Supabase, and Google's Gemini AI.
 
+## 📋 Documentation
+
+- **[🏆 Hackathon Submission Guide](./HACKATHON_SUBMISSION.md)** - Complete hackathon pitch and roadmap
+- **[Hackathon Judge Analysis](./Analysis.md)** - Comprehensive evaluation and scoring
+- **[Business Plan](./docs/business/BUSINESS_PLAN.md)** - Market analysis, financial projections, and go-to-market strategy
+- **[HIPAA Compliance](./docs/compliance/HIPAA_COMPLIANCE.md)** - Privacy policy, security measures, and regulatory documentation
+- **[Contributing Guidelines](./CONTRIBUTING.md)** - How to contribute to the project
+- **[Code of Conduct](./CODE_OF_CONDUCT.md)** - Community guidelines
+- **[Security Policy](./SECURITY.md)** - Security procedures and reporting
+- **[Changelog](./CHANGELOG.md)** - Version history and updates
+- **[License](./LICENSE)** - MIT License
+
 ## Features
 
 - 🏥 **Patient Management**: Comprehensive patient records with vitals, lab results, and medical history
@@ -171,8 +183,32 @@ npm install --legacy-peer-deps
 
 ## License
 
-This project is private and confidential.
+This project is licensed under the MIT License - see the [LICENSE](./LICENSE) file for details.
+
+## Contributing
+
+We welcome contributions! Please see our [Contributing Guidelines](./CONTRIBUTING.md) and [Code of Conduct](./CODE_OF_CONDUCT.md).
+
+## Security
+
+For security concerns, please review our [Security Policy](./SECURITY.md).
+
+## Changelog
+
+See [CHANGELOG.md](./CHANGELOG.md) for a list of changes and version history.
 
 ## Support
 
-For issues or questions, please contact the development team.
+For issues or questions, please:
+- Check the [documentation](./docs/)
+- Search [existing issues](https://github.com/Sharmamayankkkk/KodeKalesh-2/issues)
+- Create a [new issue](https://github.com/Sharmamayankkkk/KodeKalesh-2/issues/new/choose) using our templates
+
+## Acknowledgments
+
+Built for hackathon submission. Special thanks to:
+- Google Gemini AI for intelligent analysis capabilities
+- Supabase for database and authentication infrastructure
+- Vercel for hosting platform
+- The open-source community for amazing tools and libraries
+
