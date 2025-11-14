@@ -13,8 +13,18 @@ interface PatientAIAnalysisProps {
 type AnalysisJson = {
   summary: string;
   findings?: string[];
-  risk?: { level: string; justification?: string | null };
-  recommendations?: string[];
+  risk?: { level: string; justification?: string | null; confidence?: number };
+  recommendations?: Array<{
+    text: string;
+    confidence?: number;
+    data_sources?: string[];
+  }>;
+  lifestyle_insights?: {
+    activity_summary?: string;
+    nutrition_summary?: string;
+    sleep_summary?: string;
+    correlations?: string[];
+  };
 };
 
 export default function PatientAIAnalysis({ patientId }: PatientAIAnalysisProps) {
@@ -261,25 +271,80 @@ export default function PatientAIAnalysis({ patientId }: PatientAIAnalysisProps)
 
             <section className="bg-white p-3 sm:p-4 rounded border">
               <h3 className="text-sm font-semibold mb-2">Risk Assessment</h3>
-              <p className="text-xs sm:text-sm leading-relaxed">
-                <strong className="text-sm sm:text-base">{analysisJson.risk?.level ?? "Unknown"}</strong>
-                {" — "}
-                {analysisJson.risk?.justification ?? "No justification provided."}
-              </p>
+              <div className="text-xs sm:text-sm leading-relaxed">
+                <div>
+                  <strong className="text-sm sm:text-base">{analysisJson.risk?.level ?? "Unknown"}</strong>
+                  {analysisJson.risk?.confidence !== undefined && (
+                    <span className="ml-2 text-xs text-muted-foreground">
+                      (Confidence: {analysisJson.risk.confidence}%)
+                    </span>
+                  )}
+                </div>
+                {analysisJson.risk?.justification && (
+                  <p className="mt-1">{analysisJson.risk.justification}</p>
+                )}
+              </div>
             </section>
 
             <section className="bg-white p-3 sm:p-4 rounded border">
               <h3 className="text-sm font-semibold mb-2">Recommendations</h3>
               {analysisJson.recommendations && analysisJson.recommendations.length > 0 ? (
-                <ol className="list-decimal pl-4 sm:pl-5 space-y-1 text-xs sm:text-sm">
+                <ol className="list-decimal pl-4 sm:pl-5 space-y-2 text-xs sm:text-sm">
                   {analysisJson.recommendations.map((r, i) => (
-                    <li key={i} className="leading-relaxed">{r}</li>
+                    <li key={i} className="leading-relaxed">
+                      <div>{typeof r === 'string' ? r : r.text}</div>
+                      {typeof r === 'object' && r.confidence !== undefined && (
+                        <div className="text-xs text-muted-foreground mt-1">
+                          Confidence: {r.confidence}%
+                          {r.data_sources && r.data_sources.length > 0 && (
+                            <span className="ml-2">• Sources: {r.data_sources.join(', ')}</span>
+                          )}
+                        </div>
+                      )}
+                    </li>
                   ))}
                 </ol>
               ) : (
                 <p className="text-xs sm:text-sm text-muted-foreground">No recommendations provided.</p>
               )}
             </section>
+
+            {/* Lifestyle Insights Section */}
+            {analysisJson.lifestyle_insights && (
+              <section className="bg-white p-3 sm:p-4 rounded border">
+                <h3 className="text-sm font-semibold mb-2">Lifestyle Insights</h3>
+                <div className="space-y-2 text-xs sm:text-sm">
+                  {analysisJson.lifestyle_insights.activity_summary && (
+                    <div>
+                      <strong className="text-muted-foreground">Activity:</strong>{' '}
+                      {analysisJson.lifestyle_insights.activity_summary}
+                    </div>
+                  )}
+                  {analysisJson.lifestyle_insights.nutrition_summary && (
+                    <div>
+                      <strong className="text-muted-foreground">Nutrition:</strong>{' '}
+                      {analysisJson.lifestyle_insights.nutrition_summary}
+                    </div>
+                  )}
+                  {analysisJson.lifestyle_insights.sleep_summary && (
+                    <div>
+                      <strong className="text-muted-foreground">Sleep:</strong>{' '}
+                      {analysisJson.lifestyle_insights.sleep_summary}
+                    </div>
+                  )}
+                  {analysisJson.lifestyle_insights.correlations && analysisJson.lifestyle_insights.correlations.length > 0 && (
+                    <div>
+                      <strong className="text-muted-foreground">Correlations:</strong>
+                      <ul className="list-disc pl-5 mt-1 space-y-1">
+                        {analysisJson.lifestyle_insights.correlations.map((c, i) => (
+                          <li key={i}>{c}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              </section>
+            )}
           </div>
         ) : analysisText ? (
           <pre className="bg-gray-50 p-3 sm:p-4 rounded text-xs sm:text-sm whitespace-pre-wrap overflow-auto max-h-96">
