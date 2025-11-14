@@ -53,6 +53,14 @@ export default function PatientAIAnalysis({ patientId }: PatientAIAnalysisProps)
         .order("result_at", { ascending: false })
         .limit(10);
 
+      const { data: alerts } = await supabase
+        .from("alerts")
+        .select("*")
+        .eq("patient_id", patientId)
+        .eq("status", "active")
+        .order("created_at", { ascending: false })
+        .limit(10);
+
       const response = await fetch("/api/ai/analyze-patient", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -61,6 +69,7 @@ export default function PatientAIAnalysis({ patientId }: PatientAIAnalysisProps)
             ...patient,
             vitals: vitalSigns || [],
             lab_results: labResults || [],
+            alerts: alerts || [],
           },
         }),
       });
