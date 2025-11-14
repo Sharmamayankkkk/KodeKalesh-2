@@ -1,0 +1,7 @@
+{
+  "name": "healthpulse-pro-seed",
+  "version": "1.0.0",
+  "scripts": {
+    "seed": "npx ts-node seed-database.ts"
+  }
+}

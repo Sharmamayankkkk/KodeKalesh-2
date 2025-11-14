@@ -1,0 +1,15 @@
+-- Seed visit history and clinical encounters
+INSERT INTO public.visits (patient_id, visit_type, chief_complaint, clinical_notes, diagnosis, treatment_plan, medications_prescribed, referrals, follow_up_date, physician_id, status, visit_date, created_at)
+VALUES
+  ('650e8400-e29b-41d4-a716-446655440001'::UUID, 'routine', 'Diabetes management', 'Glucose control poor, BP elevated', ARRAY['Type 2 Diabetes Mellitus - uncontrolled', 'Essential Hypertension'], 'Increase metformin to 2000mg daily, referral to endocrinology', ARRAY['Metformin 2000mg daily'], ARRAY['Endocrinology'], (NOW() + INTERVAL '30 days')::DATE, '550e8400-e29b-41d4-a716-446655440002'::UUID, 'completed', NOW() - INTERVAL '30 days', NOW() - INTERVAL '30 days'),
+  ('650e8400-e29b-41d4-a716-446655440001'::UUID, 'follow_up', 'Follow-up diabetes', 'A1C remains elevated', ARRAY['Type 2 Diabetes with hypertension'], 'Continue current meds, monitor glucose daily', ARRAY['Metformin 2000mg', 'Lisinopril 20mg'], ARRAY[], (NOW() + INTERVAL '14 days')::DATE, '550e8400-e29b-41d4-a716-446655440002'::UUID, 'completed', NOW() - INTERVAL '15 days', NOW() - INTERVAL '15 days'),
+  ('650e8400-e29b-41d4-a716-446655440002'::UUID, 'routine', 'Asthma assessment', 'Well-controlled with current regimen', ARRAY['Mild persistent asthma'], 'Maintain inhaled corticosteroid', ARRAY['Fluticasone/Salmeterol inhaler'], ARRAY[], (NOW() + INTERVAL '90 days')::DATE, '550e8400-e29b-41d4-a716-446655440002'::UUID, 'completed', NOW() - INTERVAL '60 days', NOW() - INTERVAL '60 days'),
+  ('650e8400-e29b-41d4-a716-446655440002'::UUID, 'follow_up', 'Asthma follow-up', 'Some breakthrough symptoms noted', ARRAY['Mild persistent asthma'], 'Continue current inhaler therapy', ARRAY['Albuterol inhaler', 'Fluticasone'], ARRAY[], (NOW() + INTERVAL '30 days')::DATE, '550e8400-e29b-41d4-a716-446655440002'::UUID, 'completed', NOW() - INTERVAL '25 days', NOW() - INTERVAL '25 days'),
+  ('650e8400-e29b-41d4-a716-446655440003'::UUID, 'routine', 'Heart failure monitoring', 'EF 35%, stable on current regimen', ARRAY['Heart failure with reduced ejection fraction'], 'Continue triple therapy, monitoring', ARRAY['ACE inhibitor', 'Beta-blocker', 'Diuretic'], ARRAY['Cardiology'], (NOW() + INTERVAL '30 days')::DATE, '550e8400-e29b-41d4-a716-446655440003'::UUID, 'completed', NOW() - INTERVAL '90 days', NOW() - INTERVAL '90 days')
+ON CONFLICT DO NOTHING;
+
+-- Additional visits for patient-001
+INSERT INTO public.visits (patient_id, visit_type, chief_complaint, clinical_notes, diagnosis, treatment_plan, medications_prescribed, referrals, follow_up_date, physician_id, status, visit_date, created_at)
+VALUES
+  ('650e8400-e29b-41d4-a716-446655440001'::UUID, 'urgent', 'Blood glucose control', 'Needs hospitalization for stabilization', ARRAY['Hyperglycemia'], 'Urgent insulin initiation recommended', ARRAY['Insulin'], ARRAY[], (NOW() + INTERVAL '7 days')::DATE, '550e8400-e29b-41d4-a716-446655440002'::UUID, 'completed', NOW() - INTERVAL '5 days', NOW() - INTERVAL '5 days')
+ON CONFLICT DO NOTHING;

@@ -1,0 +1,14 @@
+-- Seed prescription data with realistic medications
+INSERT INTO public.prescriptions (patient_id, medication_name, dosage, frequency, route, start_date, end_date, indication, refills_remaining, prescribed_by_id, status, notes, created_at)
+VALUES
+  ('650e8400-e29b-41d4-a716-446655440001'::UUID, 'Metformin', '1000mg', 'Twice daily', 'oral', (NOW() - INTERVAL '180 days')::DATE, NULL, 'Type 2 Diabetes', 3, '550e8400-e29b-41d4-a716-446655440002'::UUID, 'active', 'Take with meals', NOW() - INTERVAL '180 days'),
+  ('650e8400-e29b-41d4-a716-446655440001'::UUID, 'Lisinopril', '20mg', 'Once daily', 'oral', (NOW() - INTERVAL '120 days')::DATE, NULL, 'Hypertension', 5, '550e8400-e29b-41d4-a716-446655440002'::UUID, 'active', 'Take in morning', NOW() - INTERVAL '120 days'),
+  ('650e8400-e29b-41d4-a716-446655440001'::UUID, 'Atorvastatin', '40mg', 'Once daily', 'oral', (NOW() - INTERVAL '150 days')::DATE, NULL, 'Hyperlipidemia', 5, '550e8400-e29b-41d4-a716-446655440002'::UUID, 'active', 'Take at bedtime', NOW() - INTERVAL '150 days'),
+  ('650e8400-e29b-41d4-a716-446655440001'::UUID, 'Insulin Glargine', '20 units', 'Once daily', 'subcutaneous', (NOW() - INTERVAL '10 days')::DATE, NULL, 'Type 2 Diabetes', 0, '550e8400-e29b-41d4-a716-446655440002'::UUID, 'active', 'Inject before bedtime', NOW() - INTERVAL '10 days'),
+  ('650e8400-e29b-41d4-a716-446655440002'::UUID, 'Fluticasone/Salmeterol', '100/50 mcg', 'Twice daily', 'inhaled', (NOW() - INTERVAL '90 days')::DATE, NULL, 'Asthma', 2, '550e8400-e29b-41d4-a716-446655440002'::UUID, 'active', 'Rinse mouth after use', NOW() - INTERVAL '90 days'),
+  ('650e8400-e29b-41d4-a716-446655440002'::UUID, 'Albuterol', '90 mcg', 'As needed', 'inhaled', (NOW() - INTERVAL '60 days')::DATE, NULL, 'Asthma', 4, '550e8400-e29b-41d4-a716-446655440002'::UUID, 'active', 'Use for acute symptoms', NOW() - INTERVAL '60 days'),
+  ('650e8400-e29b-41d4-a716-446655440003'::UUID, 'Lisinopril', '20mg', 'Once daily', 'oral', (NOW() - INTERVAL '200 days')::DATE, NULL, 'Heart Failure', 8, '550e8400-e29b-41d4-a716-446655440003'::UUID, 'active', 'Monitor BP and K+', NOW() - INTERVAL '200 days'),
+  ('650e8400-e29b-41d4-a716-446655440003'::UUID, 'Carvedilol', '25mg', 'Twice daily', 'oral', (NOW() - INTERVAL '180 days')::DATE, NULL, 'Heart Failure', 6, '550e8400-e29b-41d4-a716-446655440003'::UUID, 'active', 'Do not stop abruptly', NOW() - INTERVAL '180 days'),
+  ('650e8400-e29b-41d4-a716-446655440003'::UUID, 'Furosemide', '40mg', 'Twice daily', 'oral', (NOW() - INTERVAL '90 days')::DATE, NULL, 'Heart Failure', 3, '550e8400-e29b-41d4-a716-446655440003'::UUID, 'active', 'Monitor weight daily', NOW() - INTERVAL '90 days'),
+  ('650e8400-e29b-41d4-a716-446655440003'::UUID, 'Potassium Chloride', '20 mEq', 'Once daily', 'oral', (NOW() - INTERVAL '90 days')::DATE, NULL, 'Hypokalemia prevention', 3, '550e8400-e29b-41d4-a716-446655440003'::UUID, 'active', 'Take with meals', NOW() - INTERVAL '90 days')
+ON CONFLICT DO NOTHING;

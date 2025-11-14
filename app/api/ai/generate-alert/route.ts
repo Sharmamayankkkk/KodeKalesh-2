@@ -1,0 +1,35 @@
+import { generateText } from "ai";
+
+export const runtime = "nodejs";
+
+export async function POST(request: Request) {
+  try {
+    const { alertData, patientData } = await request.json();
+
+    const prompt = `Generate a clinical alert notification. Be concise and professional.
+
+Alert Type: ${alertData.alert_type}
+Severity: ${alertData.severity}
+Patient: ${patientData.first_name} ${patientData.last_name}
+Description: ${alertData.description}
+
+Generate a clear, actionable alert message (1-2 sentences) that a healthcare professional would understand.`;
+
+    const { text } = await generateText({
+      model: "openai/gpt-4o-mini",
+      prompt,
+      temperature: 0.5,
+      maxTokens: 150,
+    });
+
+    return Response.json({
+      alertMessage: text,
+    });
+  } catch (error) {
+    console.error("Alert Generation Error:", error);
+    return Response.json(
+      { error: "Failed to generate alert message" },
+      { status: 500 }
+    );
+  }
+}

@@ -1,0 +1,29 @@
+@import 'tailwindcss';
+
+@theme {
+  --font-sans: system-ui, -apple-system, sans-serif;
+  --font-mono: 'Courier New', monospace;
+  
+  /* Healthcare color system */
+  --color-background: #ffffff;
+  --color-foreground: #0f172a;
+  --color-muted-background: #f8fafc;
+  --color-muted-foreground: #64748b;
+  --color-border: #e2e8f0;
+  --color-primary: #0ea5e9; /* Sky Blue */
+  --color-primary-foreground: #ffffff;
+  --color-destructive: #ef4444; /* Red for alerts */
+  --color-warning: #f59e0b; /* Amber for warnings */
+  --color-success: #10b981; /* Emerald for success */
+  --color-info: #3b82f6; /* Blue for info */
+  
+  --radius: 0.5rem;
+}
+
+* {
+  @apply border-border;
+}
+
+body {
+  @apply bg-background text-foreground;
+}
