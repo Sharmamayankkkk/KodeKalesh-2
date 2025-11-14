@@ -9,11 +9,12 @@ const patientDataSchema = z.object({
     first_name: z.string(),
     last_name: z.string(),
     date_of_birth: z.string(),
-    vitals: z.array(z.any()), // Keeping vitals flexible for now
-    medical_history: z.array(z.any()),
-    medications: z.array(z.any()),
-    lab_results: z.array(z.any()),
-    alerts: z.array(z.any()),
+    vitals: z.array(z.any()).default([]),
+    chronic_conditions: z.array(z.string()).nullable().default([]),
+    medications: z.array(z.string()).nullable().default([]),
+    allergies: z.array(z.string()).nullable().default([]),
+    lab_results: z.array(z.any()).default([]),
+    alerts: z.array(z.any()).optional().default([]),
   }),
 });
 
@@ -35,10 +36,11 @@ Data:
 - Name: ${patient.first_name} ${patient.last_name}
 - DOB: ${patient.date_of_birth}
 - Recent Vitals: ${JSON.stringify(patient.vitals.slice(0, 5))}
-- Medical History: ${JSON.stringify(patient.medical_history)}
-- Current Medications: ${JSON.stringify(patient.medications)}
+- Chronic Conditions: ${JSON.stringify(patient.chronic_conditions || [])}
+- Allergies: ${JSON.stringify(patient.allergies || [])}
+- Current Medications: ${JSON.stringify(patient.medications || [])}
 - Recent Lab Results: ${JSON.stringify(patient.lab_results.slice(0, 5))}
-- Active Alerts: ${JSON.stringify(patient.alerts)}
+- Active Alerts: ${JSON.stringify(patient.alerts || [])}
 
 Provide:
 1. Clinical Summary (2-3 sentences)
