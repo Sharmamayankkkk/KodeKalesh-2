@@ -6,10 +6,10 @@ export const metadata: Metadata = {
   description: "AI-powered clinical decision support and patient management system",
   icons: {
     icon: [
-      { url: '/Logo.png', sizes: '32x32', type: 'image/png' },
+      { url: '/Logo.jpg', sizes: '32x32', type: 'image/png' },
     ],
     apple: [
-      { url: '/Logo.png', sizes: '180x180', type: 'image/png' },
+      { url: '/Logo.jpg', sizes: '180x180', type: 'image/png' },
     ],
   },
 };

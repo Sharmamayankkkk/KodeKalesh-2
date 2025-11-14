@@ -34,11 +34,11 @@ export default function Logo({ className, showText = true, size = "md" }: LogoPr
 
   return (
     <div className={cn("flex items-center gap-2", className)}>
-      {/* Logo - will use Logo.png if available, otherwise fallback to icon */}
+      {/* Logo - will use Logo.jpg if available, otherwise fallback to icon */}
       <div className={cn("bg-primary rounded-lg flex items-center justify-center overflow-hidden", sizeClasses[size])}>
         {!imageError ? (
           <Image
-            src="/Logo.png"
+            src="/Logo.jpg"
             alt="HealthPulse Pro Logo"
             width={size === "sm" ? 32 : size === "md" ? 40 : 48}
             height={size === "sm" ? 32 : size === "md" ? 40 : 48}
