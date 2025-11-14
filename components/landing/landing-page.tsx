@@ -245,17 +245,17 @@ export default function LandingPage() {
             <div>
               <h3 className="font-semibold text-foreground mb-3">Product</h3>
               <ul className="space-y-2 text-sm text-muted-foreground">
-                <li><Link href="/auth/login" className="hover:text-foreground transition">Features</Link></li>
-                <li><Link href="/auth/login" className="hover:text-foreground transition">Pricing</Link></li>
-                <li><Link href="/auth/login" className="hover:text-foreground transition">Security</Link></li>
+                <li><Link href="/features" className="hover:text-foreground transition">Features</Link></li>
+                <li><Link href="/pricing" className="hover:text-foreground transition">Pricing</Link></li>
+                <li><Link href="/security" className="hover:text-foreground transition">Security</Link></li>
               </ul>
             </div>
             <div>
               <h3 className="font-semibold text-foreground mb-3">Company</h3>
               <ul className="space-y-2 text-sm text-muted-foreground">
-                <li><Link href="/auth/login" className="hover:text-foreground transition">About</Link></li>
-                <li><Link href="/auth/login" className="hover:text-foreground transition">Contact</Link></li>
-                <li><Link href="/auth/login" className="hover:text-foreground transition">Support</Link></li>
+                <li><Link href="/about" className="hover:text-foreground transition">About</Link></li>
+                <li><Link href="/contact" className="hover:text-foreground transition">Contact</Link></li>
+                <li><Link href="/support" className="hover:text-foreground transition">Support</Link></li>
               </ul>
             </div>
           </div>
