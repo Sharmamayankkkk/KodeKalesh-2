@@ -337,24 +337,40 @@ GRANT SELECT ON security_compliance_status TO authenticated;
 
 -- RLS policies
 ALTER TABLE mfa_secrets ENABLE ROW LEVEL SECURITY;
+
+-- Drop policy if it exists to avoid conflicts
+DROP POLICY IF EXISTS mfa_secrets_own_access ON mfa_secrets;
+
 CREATE POLICY mfa_secrets_own_access ON mfa_secrets
   FOR ALL
-  USING (user_id = auth.uid());
+  USING (user_id = (SELECT auth.uid()));
 
 ALTER TABLE trusted_devices ENABLE ROW LEVEL SECURITY;
+
+-- Drop policy if it exists to avoid conflicts
+DROP POLICY IF EXISTS trusted_devices_own_access ON trusted_devices;
+
 CREATE POLICY trusted_devices_own_access ON trusted_devices
   FOR ALL
-  USING (user_id = auth.uid());
+  USING (user_id = (SELECT auth.uid()));
 
 ALTER TABLE user_sessions ENABLE ROW LEVEL SECURITY;
+
+-- Drop policy if it exists to avoid conflicts
+DROP POLICY IF EXISTS user_sessions_own_access ON user_sessions;
+
 CREATE POLICY user_sessions_own_access ON user_sessions
   FOR SELECT
-  USING (user_id = auth.uid());
+  USING (user_id = (SELECT auth.uid()));
 
 ALTER TABLE user_security_settings ENABLE ROW LEVEL SECURITY;
+
+-- Drop policy if it exists to avoid conflicts
+DROP POLICY IF EXISTS user_security_settings_own_access ON user_security_settings;
+
 CREATE POLICY user_security_settings_own_access ON user_security_settings
   FOR ALL
-  USING (user_id = auth.uid());
+  USING (user_id = (SELECT auth.uid()));
 
 -- Comments
 COMMENT ON TABLE mfa_secrets IS 'MFA secrets and backup codes for two-factor authentication';
