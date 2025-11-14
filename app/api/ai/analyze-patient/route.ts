@@ -1,5 +1,4 @@
-
-const { createGoogle } = require('@ai-sdk/google');
+import { createGoogle } from '@ai-sdk/google';
 import { generateText } from 'ai';
 import { z } from 'zod';
 
@@ -20,6 +19,14 @@ const patientDataSchema = z.object({
 
 export async function POST(req: Request) {
   try {
+    // Verify API key is configured
+    if (!process.env.GOOGLE_GENERATIVE_AI_API_KEY) {
+      return Response.json(
+        { error: "Google Generative AI API key is not configured" },
+        { status: 500 }
+      );
+    }
+
     const { patient } = patientDataSchema.parse(await req.json());
 
     // Construct a detailed prompt for the AI

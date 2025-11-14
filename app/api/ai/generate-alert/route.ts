@@ -1,11 +1,18 @@
-
-const { createGoogle } = require('@ai-sdk/google');
+import { createGoogle } from '@ai-sdk/google';
 import { generateText } from 'ai';
 
 export const runtime = "nodejs";
 
 export async function POST(request: Request) {
   try {
+    // Verify API key is configured
+    if (!process.env.GOOGLE_GENERATIVE_AI_API_KEY) {
+      return Response.json(
+        { error: "Google Generative AI API key is not configured" },
+        { status: 500 }
+      );
+    }
+
     const { alertData, patientData } = await request.json();
 
     const prompt = `Generate a clinical alert notification. Be concise and professional.
