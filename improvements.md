@@ -46,3 +46,60 @@ This document outlines key areas for improvement to enhance the capabilities, se
 **Proposed Solution:**
 - **Confidence Scores:** Display a confidence score alongside the AI's risk assessment to give clinicians a better sense of the model's certainty.
 - **Interactive Elements:** Allow clinicians to click on specific recommendations to see the underlying data that led to that suggestion.
+
+## 6. Implement Role-Based Access Control (RBAC) and Tailored Workflows
+
+**Problem:** The application currently lacks distinct roles and permissions, leading to security vulnerabilities and a one-size-fits-all user experience that isn't optimized for different clinical functions.
+
+**Proposed Solution:**
+Implement a robust RBAC system to create tailored experiences for different user roles. This will enhance security and improve workflow efficiency.
+
+**Defined Roles & Permissions:**
+
+*   **Administrator:**
+    *   **Dashboard:** High-level overview of system health, user activity, and data metrics.
+    *   **Features:**
+        *   Full access to the User Management dashboard (invite, assign/change roles, deactivate users).
+        *   Access to System Settings and configurations.
+        *   View comprehensive audit logs.
+        *   Can view all patient data but cannot modify clinical records.
+
+*   **Doctor / Clinician:**
+    *   **Dashboard:** Main patient overview (Total Patients, Active Alerts, AI Analysis). 
+    *   **Features:**
+        *   View a list of their assigned patients.
+        *   Access detailed patient views (vitals, labs, prescriptions, history).
+        *   Receive and manage alerts.
+        *   Create and manage prescriptions.
+        *   Access the AI-powered patient analysis.
+
+*   **Nurse:**
+    *   **Dashboard:** Task-oriented view of patients needing attention (vitals collection, medication administration).
+    *   **Features:**
+        *   Efficient interface for entering new vital signs for patients.
+        *   View and acknowledge medication administration tasks.
+        *   View patient-specific notes and care plans from doctors.
+        *   Can create low-level alerts or notifications for review by a doctor.
+
+*   **Lab Technician:**
+    *   **Dashboard:** Focused view of pending tests and recently uploaded results.
+    *   **Features:**
+        *   Simple interface to add new patients.
+        *   Functionality to upload lab reports (structured data or PDF).
+        *   **Manual Alert Creation:** Ability to manually create and send an alert to the responsible doctor upon spotting an anomaly.
+        *   View limited patient information relevant to lab work.
+
+*   **Pharmacist:**
+    *   **Dashboard:** View of pending/new prescriptions and medication interaction alerts.
+    *   **Features:**
+        *   View and manage prescriptions; mark them as filled/dispensed.
+        *   System to flag potential drug interactions, possibly integrated with the AI.
+        *   Securely communicate with doctors regarding prescription questions.
+
+*   **Receptionist:**
+    *   **Dashboard:** Patient check-in queue, appointment schedule, new patient registration.
+    *   **Features:**
+        *   Manage patient appointments.
+        *   Register new patients with basic demographic information.
+        *   Update patient contact and insurance information.
+        *   Strictly limited access to non-clinical patient data.
