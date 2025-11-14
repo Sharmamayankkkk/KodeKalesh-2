@@ -4,11 +4,9 @@
 -- Retention: 6 years minimum (HIPAA requirement)
 -- ============================================================================
 
--- Drop existing audit_log if it exists
-DROP TABLE IF EXISTS audit_log CASCADE;
-
 -- Create comprehensive audit_logs table with all HIPAA requirements
-CREATE TABLE audit_logs (
+-- Note: This extends the existing audit_log table from 008_create_audit_log.sql
+CREATE TABLE IF NOT EXISTS audit_logs (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   timestamp TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   
@@ -60,13 +58,11 @@ CREATE INDEX idx_audit_action ON audit_logs(action, timestamp DESC);
 CREATE INDEX idx_audit_ip ON audit_logs(ip_address, timestamp DESC);
 CREATE INDEX idx_audit_severity ON audit_logs(severity, timestamp DESC) WHERE severity IN ('warning', 'critical');
 
--- Partition by month for performance (example for 2024-2025)
-CREATE TABLE audit_logs_2024_11 PARTITION OF audit_logs
-  FOR VALUES FROM ('2024-11-01') TO ('2024-12-01');
-CREATE TABLE audit_logs_2024_12 PARTITION OF audit_logs
-  FOR VALUES FROM ('2024-12-01') TO ('2025-01-01');
-CREATE TABLE audit_logs_2025_01 PARTITION OF audit_logs
-  FOR VALUES FROM ('2025-01-01') TO ('2025-02-01');
+-- Note: Partitioning can be added later if needed using pg_partman
+-- Partitioning existing tables requires table recreation which we want to avoid
+-- Example partitioning commands for future reference:
+-- CREATE TABLE audit_logs_2024_11 PARTITION OF audit_logs
+--   FOR VALUES FROM ('2024-11-01') TO ('2024-12-01');
 
 -- Function to generate HMAC signature for audit log entry
 CREATE OR REPLACE FUNCTION generate_audit_signature(
@@ -338,7 +334,7 @@ CREATE TABLE IF NOT EXISTS access_review_items (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   review_id UUID NOT NULL REFERENCES access_reviews(id) ON DELETE CASCADE,
   user_id UUID NOT NULL REFERENCES users(id),
-  current_role TEXT NOT NULL,
+  user_role TEXT NOT NULL, -- Changed from current_role (reserved keyword)
   last_login TIMESTAMPTZ,
   access_appropriate BOOLEAN,
   action_taken TEXT, -- no_action, role_changed, deactivated
@@ -389,12 +385,16 @@ GRANT SELECT ON failed_login_summary TO authenticated;
 
 -- RLS policies for audit logs (compliance officers and admins only)
 ALTER TABLE audit_logs ENABLE ROW LEVEL SECURITY;
+
+-- Drop policy if it exists to avoid conflicts
+DROP POLICY IF EXISTS audit_logs_admin_access ON audit_logs;
+
 CREATE POLICY audit_logs_admin_access ON audit_logs
   FOR SELECT
   USING (
     EXISTS (
       SELECT 1 FROM users
-      WHERE users.id = auth.uid()
+      WHERE users.id = (SELECT auth.uid())
       AND users.role IN ('admin', 'compliance_officer')
     )
   );

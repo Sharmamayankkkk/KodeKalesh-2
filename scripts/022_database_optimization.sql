@@ -57,39 +57,33 @@ CREATE INDEX IF NOT EXISTS idx_sessions_token_hash
 -- 2. TABLE PARTITIONING FOR LARGE TABLES
 -- ============================================================================
 
--- Partition vital_signs by month (declarative partitioning)
-DO $$ 
-BEGIN
-  -- Check if table is already partitioned
-  IF NOT EXISTS (
-    SELECT 1 FROM pg_class WHERE relname = 'vital_signs' AND relkind = 'p'
-  ) THEN
-    -- Create new partitioned table
-    CREATE TABLE vital_signs_new (
-      LIKE vital_signs INCLUDING ALL
-    ) PARTITION BY RANGE (measured_at);
-    
-    -- Create partitions for current and future months
-    -- This is a template - in production, use pg_partman for automatic partition management
-    -- Example partitions:
-    -- CREATE TABLE vital_signs_2024_11 PARTITION OF vital_signs_new
-    --   FOR VALUES FROM ('2024-11-01') TO ('2024-12-01');
-    -- CREATE TABLE vital_signs_2024_12 PARTITION OF vital_signs_new
-    --   FOR VALUES FROM ('2024-12-01') TO ('2025-01-01');
-  END IF;
-END $$;
+-- Note: Partitioning existing tables requires table recreation
+-- For production use, consider using pg_partman extension for automatic partition management
+-- Below is example code for future reference when implementing partitioning:
 
--- Partition lab_results by month
-DO $$
-BEGIN
-  IF NOT EXISTS (
-    SELECT 1 FROM pg_class WHERE relname = 'lab_results' AND relkind = 'p'
-  ) THEN
-    CREATE TABLE lab_results_new (
-      LIKE lab_results INCLUDING ALL
-    ) PARTITION BY RANGE (test_date);
-  END IF;
-END $$;
+-- Example: Partition vital_signs by month (declarative partitioning)
+-- This would require recreating the table as a partitioned table
+-- DO $$ 
+-- BEGIN
+--   -- Create new partitioned table (only if table doesn't exist or during migration)
+--   -- CREATE TABLE vital_signs_partitioned (
+--   --   LIKE vital_signs INCLUDING ALL
+--   -- ) PARTITION BY RANGE (measured_at);
+--   
+--   -- Create partitions for current and future months
+--   -- CREATE TABLE vital_signs_2024_11 PARTITION OF vital_signs_partitioned
+--   --   FOR VALUES FROM ('2024-11-01') TO ('2024-12-01');
+--   -- CREATE TABLE vital_signs_2024_12 PARTITION OF vital_signs_partitioned
+--   --   FOR VALUES FROM ('2024-12-01') TO ('2025-01-01');
+-- END $$;
+
+-- Similarly for lab_results
+-- DO $$
+-- BEGIN
+--   -- CREATE TABLE lab_results_partitioned (
+--   --   LIKE lab_results INCLUDING ALL
+--   -- ) PARTITION BY RANGE (test_date);
+-- END $$;
 
 -- ============================================================================
 -- 3. MATERIALIZED VIEWS FOR COMPLEX QUERIES

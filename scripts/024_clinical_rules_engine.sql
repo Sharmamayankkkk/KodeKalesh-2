@@ -313,11 +313,12 @@ INSERT INTO clinical_rules (
 );
 
 -- Hypertension - Critical BP
+-- Note: guideline_id will be NULL initially since no guidelines are inserted yet
+-- Add guideline reference later after populating clinical_guidelines table
 INSERT INTO clinical_rules (
   rule_id, name, category, description, condition_logic, action,
   severity, alert_message_template, recommendation_template,
-  evidence_level, enabled, priority,
-  guideline_id
+  evidence_level, enabled, priority
 ) VALUES (
   'HYPERTENSION_CRISIS',
   'Hypertensive Crisis',
@@ -339,8 +340,7 @@ INSERT INTO clinical_rules (
   'Immediate action required: 1) Assess for end-organ damage (chest pain, SOB, neuro changes), 2) If symptomatic: Emergency ED evaluation, 3) If asymptomatic: Urgent outpatient follow-up within 24-48 hours, 4) Medication review and adjustment',
   'meta_analysis',
   TRUE,
-  1,
-  (SELECT id FROM clinical_guidelines WHERE guideline_id = 'AHA_HTN_2024' LIMIT 1)
+  1
 );
 
 -- ============================================================================
