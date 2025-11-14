@@ -1,4 +1,4 @@
-import { createGoogle } from '@ai-sdk/google';
+import { google } from '@ai-sdk/google';
 import { generateText } from 'ai';
 import { z } from 'zod';
 
@@ -47,7 +47,7 @@ Provide:
 4. Recommendations (3-4 actionable items)`;
     
     const { text } = await generateText({
-      model: createGoogle()("models/gemini-1.5-flash-latest"),
+      model: google("models/gemini-1.5-flash-latest"),
       prompt,
       temperature: 0.7,
       maxOutputTokens: 500,
