@@ -3,6 +3,16 @@ import { createClient } from "@/lib/supabase/server";
 import DashboardLayout from "@/components/dashboard/dashboard-layout";
 import OverviewTab from "@/components/dashboard/overview-tab";
 
+// Role-specific dashboard redirects
+const ROLE_DASHBOARDS: Record<string, string> = {
+  admin: "/dashboard/admin",
+  doctor: "/dashboard/overview",
+  nurse: "/dashboard/overview",
+  lab_technician: "/dashboard/lab-results",
+  pharmacist: "/dashboard/prescriptions",
+  receptionist: "/dashboard/patients",
+};
+
 export default async function DashboardPage() {
   const supabase = await createClient();
   const {
@@ -20,6 +30,12 @@ export default async function DashboardPage() {
     .eq("id", user.id)
     .single();
 
+  // Redirect to role-specific dashboard if configured
+  if (userProfile?.role && ROLE_DASHBOARDS[userProfile.role]) {
+    redirect(ROLE_DASHBOARDS[userProfile.role]);
+  }
+
+  // Default fallback to overview
   return (
     <DashboardLayout user={userProfile}>
       <OverviewTab user={userProfile} />
