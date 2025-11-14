@@ -1,58 +1,51 @@
-import { createServerClient } from "@supabase/ssr";
+import { createServerClient, type CookieOptions } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
-export async function updateSession(request: NextRequest) {
-  let supabaseResponse = NextResponse.next({
-    request,
+export const createClient = (request: NextRequest) => {
+  // Create an unmodified response
+  let response = NextResponse.next({
+    request: {
+      headers: request.headers,
+    },
   });
-
-  const originalWarn = console.warn;
-  console.warn = (...args: any[]) => {
-    if (args[0]?.includes?.("Multiple GoTrueClient instances")) {
-      return;
-    }
-    originalWarn(...args);
-  };
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
       cookies: {
-        getAll() {
-          return request.cookies.getAll();
+        get(name: string) {
+          return request.cookies.get(name)?.value;
         },
-        setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value }) =>
-            request.cookies.set(name, value)
-          );
-          supabaseResponse = NextResponse.next({
-            request,
+        set(name: string, value: string, options: CookieOptions) {
+          // If the cookie is updated, update the request cookies and re-assign the response to overwrite the modified request cookies.
+          request.cookies.set({
+            name,
+            value,
+            ...options,
           });
-          cookiesToSet.forEach(({ name, value, options }) =>
-            supabaseResponse.cookies.set(name, value, options)
-          );
+          response = NextResponse.next({
+            request: {
+              headers: request.headers,
+            },
+          });
+        },
+        remove(name: string, options: CookieOptions) {
+          // If the cookie is removed, update the request cookies and re-assign the response to overwrite the modified request cookies.
+          request.cookies.set({
+            name,
+            value: "",
+            ...options,
+          });
+          response = NextResponse.next({
+            request: {
+              headers: request.headers,
+            },
+          });
         },
       },
     }
   );
 
-  console.warn = originalWarn;
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (
-    request.nextUrl.pathname !== "/" &&
-    !user &&
-    !request.nextUrl.pathname.startsWith("/auth") &&
-    !request.nextUrl.pathname.startsWith("/public")
-  ) {
-    const url = request.nextUrl.clone();
-    url.pathname = "/auth/login";
-    return NextResponse.redirect(url);
-  }
-
-  return supabaseResponse;
-}
+  return { supabase, response };
+};

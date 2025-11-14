@@ -25,12 +25,12 @@ import { generateText } from 'ai';
 
 **Before**:
 ```typescript
-model: createGoogle()('models/gemini-1.5-flash-latest')
+model: createGoogle()('models/gemini-2.5-flash')
 ```
 
 **After**:
 ```typescript
-model: google('models/gemini-1.5-flash-latest')
+model: google('models/gemini-2.5-flash')
 ```
 
 ### 3. Incorrect Parameter Name
@@ -39,7 +39,7 @@ model: google('models/gemini-1.5-flash-latest')
 **Before**:
 ```typescript
 const { text } = await generateText({
-  model: google('models/gemini-1.5-flash-latest'),
+  model: google('models/gemini-2.5-flash'),
   prompt,
   temperature: 0.5,
   maxTokens: 150,  // ❌ Wrong parameter name
@@ -49,7 +49,7 @@ const { text } = await generateText({
 **After**:
 ```typescript
 const { text } = await generateText({
-  model: google('models/gemini-1.5-flash-latest'),
+  model: google('models/gemini-2.5-flash'),
   prompt,
   temperature: 0.5,
   maxOutputTokens: 150,  // ✅ Correct parameter name
