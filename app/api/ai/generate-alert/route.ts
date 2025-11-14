@@ -1,4 +1,6 @@
-import { generateText } from "ai";
+
+const { createGoogle } = require('@ai-sdk/google');
+import { generateText } from 'ai';
 
 export const runtime = "nodejs";
 
@@ -16,10 +18,10 @@ Description: ${alertData.description}
 Generate a clear, actionable alert message (1-2 sentences) that a healthcare professional would understand.`;
 
     const { text } = await generateText({
-      model: "openai/gpt-4o-mini",
+      model: createGoogle()('models/gemini-1.5-flash-latest'),
       prompt,
       temperature: 0.5,
-      maxTokens: 150,
+      maxOutputTokens: 150,
     });
 
     return Response.json({

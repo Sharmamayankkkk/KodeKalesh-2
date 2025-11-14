@@ -57,9 +57,11 @@ export default function PatientAIAnalysis({ patientId }: PatientAIAnalysisProps)
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          patientData: patient,
-          vitalSigns: vitalSigns || [],
-          labResults: labResults || [],
+          patient: {
+            ...patient,
+            vitals: vitalSigns || [],
+            lab_results: labResults || [],
+          },
         }),
       });
 

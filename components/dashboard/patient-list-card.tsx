@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { createClient } from "@/lib/supabase/client";
 import Link from "next/link";
 import { Users } from 'lucide-react';
@@ -10,74 +10,88 @@ export default function PatientListCard() {
   const [patients, setPatients] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchPatients = async () => {
-      try {
-        const {
-          data: { user },
-        } = await supabase.auth.getUser();
+  const fetchPatients = useCallback(async () => {
+    setLoading(true);
+    try {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
 
-        const { data } = await supabase
-          .from("patients")
-          .select("id, first_name, last_name, mrn, status")
-          .eq("primary_physician_id", user?.id)
-          .order("created_at", { ascending: false })
-          .limit(5);
+      if (!user) return;
 
-        setPatients(data || []);
-      } catch (error) {
-        console.error("Error fetching patients:", error);
-      } finally {
-        setLoading(false);
+      const { data: userProfile } = await supabase
+        .from("users")
+        .select("role")
+        .eq("id", user.id)
+        .single();
+
+      let query = supabase.from("patients").select("id, first_name, last_name, mrn, status");
+
+      if (userProfile && userProfile.role !== 'admin') {
+        query = query.eq("primary_physician_id", user.id);
       }
-    };
 
-    fetchPatients();
+      const { data } = await query.order("created_at", { ascending: false }).limit(5);
+
+      setPatients(data || []);
+    } catch (error) {
+      console.error("Error fetching recent patients:", error);
+    } finally {
+      setLoading(false);
+    }
   }, [supabase]);
+
+  useEffect(() => {
+    fetchPatients();
+  }, [fetchPatients]);
+
+  const getInitials = (firstName: string, lastName: string) => {
+    return `${firstName[0] || ''}${lastName[0] || ''}`.toUpperCase();
+  };
 
   return (
     <div className="bg-background border border-border rounded-lg p-6 shadow-sm">
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-lg font-bold text-foreground">My Patients</h2>
-        <Link
-          href="/dashboard/patients"
-          className="text-sm text-primary hover:underline font-medium"
-        >
+        <Link href="/dashboard/patients" className="text-sm text-primary hover:underline font-medium">
           View All
         </Link>
       </div>
-
       {loading ? (
-        <div className="space-y-3">
-          {[1, 2, 3].map((i) => (
-            <div key={i} className="h-10 bg-muted-background rounded-lg animate-pulse" />
-          ))}
+        <div className="flex justify-center items-center h-40">
+          <div className="w-8 h-8 border-4 border-border border-t-primary rounded-full animate-spin" />
         </div>
       ) : patients.length === 0 ? (
-        <div className="py-8 text-center">
-          <Users className="w-10 h-10 text-muted-foreground/30 mx-auto mb-2" />
-          <p className="text-sm text-muted-foreground">No patients yet</p>
+        <div className="flex flex-col items-center justify-center h-40 text-center">
+          <Users className="w-12 h-12 text-muted-foreground mb-4" />
+          <p className="font-medium text-foreground">No patients yet</p>
+          <p className="text-sm text-muted-foreground">Assigned patients will appear here.</p>
         </div>
       ) : (
-        <div className="space-y-2">
+        <ul className="space-y-4">
           {patients.map((patient) => (
-            <Link
-              key={patient.id}
-              href={`/dashboard/patients/${patient.id}`}
-              className="flex items-center justify-between p-2 rounded-lg hover:bg-muted-background transition group"
-            >
-              <div className="min-w-0">
-                <p className="text-sm font-medium text-foreground truncate group-hover:text-primary transition">
-                  {patient.first_name} {patient.last_name}
-                </p>
-                <p className="text-xs text-muted-foreground">MRN: {patient.mrn}</p>
+            <li key={patient.id} className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center font-bold text-foreground">
+                  {getInitials(patient.first_name, patient.last_name)}
+                </div>
+                <div>
+                  <p className="font-medium text-foreground">{patient.first_name} {patient.last_name}</p>
+                  <p className="text-sm text-muted-foreground">MRN: {patient.mrn}</p>
+                </div>
               </div>
-              <span className="text-xs px-2 py-1 rounded bg-success/10 text-success whitespace-nowrap ml-2">
+              <span
+                className={`text-xs font-medium px-2 py-1 rounded-full ${
+                  patient.status === 'active'
+                    ? 'bg-success/10 text-success'
+                    : 'bg-muted text-muted-foreground'
+                }`}
+              >
                 {patient.status}
               </span>
-            </Link>
+            </li>
           ))}
-        </div>
+        </ul>
       )}
     </div>
   );
