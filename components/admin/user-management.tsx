@@ -172,23 +172,23 @@ export default function UserManagement({ users: initialUsers, invitations: initi
 
   const getRoleBadgeColor = (role: string) => {
     const colors: Record<string, string> = {
-      admin: "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200",
-      doctor: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200",
-      nurse: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200",
-      lab_technician: "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200",
-      pharmacist: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200",
-      receptionist: "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200",
+      admin: "bg-primary/10 text-primary",
+      doctor: "bg-info/10 text-info",
+      nurse: "bg-success/10 text-success",
+      lab_technician: "bg-accent/30 text-accent-foreground",
+      pharmacist: "bg-warning/10 text-warning",
+      receptionist: "bg-muted-background text-muted-foreground",
     };
-    return colors[role] || "bg-gray-100 text-gray-800";
+    return colors[role] || "bg-muted-background text-muted-foreground";
   };
 
   const getStatusBadgeColor = (status: string) => {
     const colors: Record<string, string> = {
-      active: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200",
-      inactive: "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200",
-      suspended: "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200",
+      active: "bg-success/10 text-success",
+      inactive: "bg-muted-background text-muted-foreground",
+      suspended: "bg-destructive/10 text-destructive",
     };
-    return colors[status] || "bg-gray-100 text-gray-800";
+    return colors[status] || "bg-muted-background text-muted-foreground";
   };
 
   return (

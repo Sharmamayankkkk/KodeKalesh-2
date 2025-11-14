@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from 'next/navigation';
 import { createClient } from "@/lib/supabase/client";
 import Link from "next/link";
-import { LogIn } from 'lucide-react';
+import Logo from "@/components/ui/logo";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -43,12 +43,7 @@ export default function LoginPage() {
         <div className="bg-background rounded-lg border border-border p-8 shadow-sm">
           {/* Header */}
           <div className="flex items-center justify-center mb-8">
-            <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
-              <LogIn className="w-6 h-6 text-primary-foreground" />
-            </div>
-            <h1 className="text-2xl font-bold text-foreground ml-3">
-              HealthPulse Pro
-            </h1>
+            <Logo size="md" />
           </div>
 
           {/* Form */}
@@ -84,7 +79,7 @@ export default function LoginPage() {
             </div>
 
             {error && (
-              <div className="bg-red-50 border border-destructive rounded-lg p-3">
+              <div className="bg-destructive/10 border border-destructive rounded-lg p-3">
                 <p className="text-sm text-destructive">{error}</p>
               </div>
             )}

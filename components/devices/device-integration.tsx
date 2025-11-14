@@ -158,13 +158,13 @@ export default function DeviceIntegration() {
   const getStatusColor = (status: string) => {
     switch (status) {
       case "connected":
-        return "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200";
+        return "bg-success/10 text-success dark:bg-success/20 dark:text-success";
       case "syncing":
-        return "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200";
+        return "bg-info/10 text-info dark:bg-info/20 dark:text-info";
       case "error":
-        return "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200";
+        return "bg-destructive/10 text-destructive dark:bg-destructive/20 dark:text-destructive";
       default:
-        return "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200";
+        return "bg-muted-background text-muted-foreground dark:bg-muted dark:text-muted-foreground";
     }
   };
 
@@ -264,15 +264,15 @@ export default function DeviceIntegration() {
       </div>
 
       {/* Info Banner */}
-      <Card className="border-blue-200 bg-blue-50 dark:bg-blue-950 dark:border-blue-800">
+      <Card className="border-info/20 bg-info/10">
         <CardContent className="pt-6">
           <div className="flex items-start gap-3">
-            <Smartphone className="h-5 w-5 text-blue-600 dark:text-blue-400 mt-0.5" />
+            <Smartphone className="h-5 w-5 text-info mt-0.5" />
             <div>
-              <h3 className="font-semibold text-blue-900 dark:text-blue-100">
+              <h3 className="font-semibold text-foreground">
                 Mock Device Integration (Phase 1)
               </h3>
-              <p className="text-sm text-blue-800 dark:text-blue-200 mt-1">
+              <p className="text-sm text-muted-foreground mt-1">
                 This is a demonstration of device connectivity. The connections shown here are
                 simulated. Full API integration with real devices will be available in Phase 2
                 with the mobile app launch.
@@ -399,14 +399,14 @@ export default function DeviceIntegration() {
                 </div>
               </div>
               <div className="flex items-center gap-3 p-4 rounded-lg bg-muted">
-                <Moon className="h-8 w-8 text-blue-500" />
+                <Moon className="h-8 w-8 text-info" />
                 <div>
                   <p className="text-2xl font-bold">7.2h</p>
                   <p className="text-sm text-muted-foreground">Sleep Last Night</p>
                 </div>
               </div>
               <div className="flex items-center gap-3 p-4 rounded-lg bg-muted">
-                <Activity className="h-8 w-8 text-green-500" />
+                <Activity className="h-8 w-8 text-success" />
                 <div>
                   <p className="text-2xl font-bold">45</p>
                   <p className="text-sm text-muted-foreground">Active Minutes</p>
