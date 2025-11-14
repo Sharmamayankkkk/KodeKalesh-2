@@ -159,13 +159,13 @@ export default function SignupPage() {
             </div>
 
             {error && (
-              <div className="bg-red-50 border border-destructive rounded-lg p-3">
+              <div className="bg-destructive/10 border border-destructive rounded-lg p-3">
                 <p className="text-sm text-destructive">{error}</p>
               </div>
             )}
 
             {success && (
-              <div className="bg-green-50 border border-success rounded-lg p-3">
+              <div className="bg-success/10 border border-success rounded-lg p-3">
                 <p className="text-sm text-success">Account created! Redirecting...</p>
               </div>
             )}
