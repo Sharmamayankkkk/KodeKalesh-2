@@ -27,12 +27,15 @@ export default function LoginPage() {
 
       if (authError) {
         setError(authError.message);
+        setLoading(false);
       } else {
-        router.push("/dashboard");
+        // Refresh the router to ensure session is recognized by middleware
+        router.refresh();
+        // Use replace instead of push to avoid back button issues
+        router.replace("/dashboard");
       }
     } catch (err) {
       setError("An unexpected error occurred");
-    } finally {
       setLoading(false);
     }
   };
